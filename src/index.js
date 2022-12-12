@@ -28,12 +28,17 @@ app.get('/', (req, res) => {
 
 /**
  * User Creation API
+ * The handler will try to create the user,
+ * if an error occurs on creation and it is code 11000 (Duplicate Error),
+ *    find the exist user and return it.
+ * else if any other error,
+ *    return the error code
+ * else
+ *    return the newly created user
  */
-app.post('api/users', (req, res) => {
-  console.log('creating new user', req.body.username);
-  new User({ username: req.body.username }, (err, doc) => {
-    if (err.code == 11000) {
-      console.log('username already exist');
+app.post('/api/users', (req, res) => {
+  new User({ username: req.body.username }).save((err, doc) => {
+    if (err && err.code == 11000) {
       User.findOne({ username: req.body.username }, (err1, doc1) => {
         if (err1)
           res.json({ error: err1.messages, code: err1.code });
@@ -42,13 +47,24 @@ app.post('api/users', (req, res) => {
       });
     }
     else if (err) {
-      console.log('There was an error in creating the user, error code:', err.code);
       res.json({ error: err.messages, code: err.code });
     }
     else {
-      console.log('username created with _id:', doc._id);
       res.json(doc);
     }
+  });
+});
+
+/**
+ * Get All users API
+ */
+app.get('/api/users', (req, res) => {
+  User.find().exec((err, docs) => {
+    if (err) {
+      console.log("There was an error:", err.code);
+      res.json({ error: 'There was an error in acquiring all users. Please try again.' });
+    } else
+      res.json(docs);
   });
 })
 
