@@ -3,7 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import { fileURLToPath } from "node:url";
+import mongoose from 'mongoose';
 dotenv.config();
+mongoose.connect(process.env.CONNECTION_STRING)
+  .then(() => console.log("Connected sucessfully to database", mongoose.connection.name))
+  .catch(err => console.log("Failed to Connect to database with error message", err.message));
 
 // create express app
 const app = express();
