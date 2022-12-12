@@ -1,6 +1,6 @@
 'use strict';
 import { Schema, model } from "mongoose";
-import LogEntry from "./LogEntry";
+import Exercise from "./Exercise";
 import User from "./User";
 
 const logSchema = new Schema({
@@ -10,9 +10,9 @@ const logSchema = new Schema({
     },
     count: {
         type: Number,
-        required: true,
+        default: 1
     },
-    log: [LogEntry]
+    log: [Exercise]
 },
     { collection: 'logs' }
 );
